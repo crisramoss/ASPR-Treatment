@@ -1,0 +1,171 @@
+use aspr_treatments;
+select *
+from treatment_sites;
+
+select *
+from treatment_sites
+where has_commercial_product = 'YES';
+
+
+
+
+#1. which state has the most treatment sites
+-- California (5990) and texas (4872) have the most sites in the us
+
+select
+	state,
+    count(*) site_count
+from treatment_sites
+group by state
+order by site_count desc;
+
+
+
+
+
+#2 which city has the most treatment site that has paxlovid or Lagevrio?
+-- Houston(82) and Philadelphia (70) have the most in stock medication
+
+select
+	city,
+	state,
+    count(*) site_count
+from treatment_sites
+where has_paxlovid = 'Yes' or has_lagevrio = 'Yes'
+group by city,state
+order by site_count desc
+limit 10;
+
+
+
+#3 how many site offer usg product
+-- only 32 states offer usg product
+
+select
+	state,
+    count(*) as usg_sites
+from
+	treatment_sites
+where
+	has_usg_product = 'Yes'
+group by state
+order by usg_sites desc;
+
+
+
+#4 compare USG vs Commercial acces
+-- commercial has 11340 sites while usg has 160
+
+select
+	sum(has_usg_product = 'Yes') as usg_count,
+    sum(has_commercial_product = 'Yes') as commercial_count
+from treatment_sites;
+
+
+
+#5 which provider offers the most covid treatment
+-- 62,140 sites offer covid treatment
+SELECT
+  provider_name,
+  COUNT(*) AS site_count
+FROM treatment_sites
+GROUP BY provider_name
+HAVING site_count > 100
+ORDER BY site_count DESC;
+
+
+#6 What proportion of outpatient COVID-19 treatment sites in the U.S. are supplied by the federal government (USG) versus through commercial channels?
+-- 1.4% USG and 98.6% Commercial
+
+select
+	sum(has_usg_product = 'yes') as usg_sites,
+    sum(has_commercial_product = 'yes') as comnercial_sites,
+    round(
+			sum(has_usg_product = 'yes') * 100.0/
+            nullif(sum(case when has_usg_product = 'yes' or has_commercial_product = 'yes' then 1 else 0 end),0),2) as pct_usg,
+	round(
+			sum(has_commercial_product = 'yes') * 100.0/
+            nullif(sum(case when has_usg_product = 'yes' or has_commercial_product = 'yes' then 1 else 0 end), 0),2) as pct_commercial
+from
+	treatment_sites;
+    
+
+    
+
+    
+
+#7 how many sites offer flu treatment
+-- 10,575 offer flue treatment
+select
+count(*) as num_of_covid
+from treatment_sites
+where is_flu = 'Yes';
+
+
+SELECT 
+    SUM(CASE WHEN is_pap_site = 'Yes' THEN 1 ELSE 0 END) AS pap_count,
+    SUM(CASE WHEN is_icatt_Site = 'Yes' THEN 1 ELSE 0 END) AS icatt_count,
+    SUM(CASE WHEN is_pap_site = 'Yes' AND is_icatt_Site = 'Yes' THEN 1 ELSE 0 END) AS both_count
+FROM treatment_sites;
+	
+
+#8 drug availability
+-- only 160 out of 10524 sites of paxloid are supplied by the gov
+-- lagevrio are all purchased from commercial and are not supplied by the govt
+-- not a lot of medications are supplied by the govt
+
+select
+	sum(case when has_paxlovid = 'Yes' then 1 else 0 end) as paxlovid_count,
+    sum(case when has_commercial_paxlovid = 'Yes' then 1 else 0 end) as com_paxlovid_count,
+    sum(case when has_usg_paxlovid = 'Yes' then 1 else 0 end) as usg_paxlovid_count,
+    sum(case when has_lagevrio = 'Yes' then 1 else 0 end) as lagevrio_count,
+	sum(case when has_commercial_lagevrio = 'Yes' then 1 else 0 end) as com_lagevrio_count,
+    sum(case when has_usg_lagevrio = 'Yes' then 1 else 0 end) as usg_lagevrio_count
+from
+	treatment_sites;
+
+
+#9 where are PAP Sites with Paxlovid available?
+-- califronia, texas, new york are the top states
+
+select
+	state,
+	count(*) as sites
+from
+	treatment_sites
+where 
+	is_pap_site = 'Yes' and has_paxlovid = 'Yes'
+group by state
+order by sites desc;
+-- califronia, texas, new york are the top states
+
+
+#10 where are PAP Sites with Paxlovid available by govt and commercial?
+-- california and florida offer the most commercial product, but 0 states offers usg product
+
+select
+	state,
+    sum(case when has_commercial_paxlovid = 'Yes' then 1 else 0 end) as commercial_site,
+    sum(case when has_usg_paxlovid = 'Yes' then 1 else 0 end) as usg_site
+from
+	treatment_sites
+where 
+	is_pap_site = 'Yes'
+group by state
+order by commercial_site desc, usg_site desc;
+
+
+
+#11 Which state has the highest & lowesr access to covid-19 treaments relative to their popualtion
+-- Arizona & West Virginia has the highest access with 27 sits per 100k people while the Virgin Island has 1 site.
+
+select
+	t.state,
+    count(*) as site_count,
+    round((count(*) * 100000.0/ p.population),2) as sites_per_100k
+from treatment_sites t
+join state_population p
+on
+	t.state = p.state
+group by t.state, p.population
+order by sites_per_100k asc;
