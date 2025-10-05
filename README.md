@@ -30,3 +30,9 @@ Key Insights
 - Smaller states (West Virginia, New Hampshire) show 6× higher per-capita access compared to large states like Texas.
 - Only 40% of all sites actively report antiviral stock.
 -Independent pharmacies remain crucial for rural and local access.
+
+
+[ASPR Dashboard .pdf](https://github.com/user-attachments/files/22710961/ASPR.Dashboard.pdf)
+
+
+
