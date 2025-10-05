@@ -32,7 +32,12 @@ Key Insights
 -Independent pharmacies remain crucial for rural and local access.
 
 
-[ASPR Dashboard .pdf](https://github.com/user-attachments/files/22710961/ASPR.Dashboard.pdf)
+
+
+<img width="1578" height="756" alt="Screenshot 2025-10-05 at 1 11 17 PM" src="https://github.com/user-attachments/assets/7f4fb9a4-88f1-4e5a-bfb4-24b10e8cb9de" />
+
+
+
 
 
 
